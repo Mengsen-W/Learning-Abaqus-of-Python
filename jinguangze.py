@@ -2,11 +2,10 @@
  * @Author: Mengsen.Wang
  * @Date: 2019-12-02 19:05:58
  * @Last Modified by:   Mengsen.Wang
- * @Last Modified time: 2019-12-02 19:05:58
+ * @Last Modified time: 2019-12-05 19-27-56
 """
 # coding = utf-8
 
-# import module for abaqus
 from abaqus import *
 from abaqusConstants import *
 from caeModules import *
@@ -46,7 +45,6 @@ modelname, cover, lwall, twall, hwall, dtube, ttube, dlbar, dtbar, lfd, tfd, hfd
     fields=parameters, label="Please Input The Parameter", dialogTitle="Parameter Input"
 )
 
-
 session.viewports["Viewport: 1"].makeCurrent()
 session.viewports["Viewport: 1"].maximize()
 myModel = mdb.Model(name=modelname)
@@ -74,3 +72,142 @@ offset2 = float(offset2)
 meshsize = float(meshsize)
 space = float(space)
 
+# part
+## wall
+
+### Sketch for Wall
+s = myModel.ConstrainedSketch(name=modelname, sheetSize=lwall)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(-lwall / 2, -twall / 2), point2=(lwall / 2, twall / 2))
+s.CircleByCenterPerimeter(center=(-offset1, 0), point1=(-offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(offset1, 0), point1=(offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset2, 0), point1=(-offset2 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(offset2, 0), point1=(offset2 + dtube / 2, 0))
+
+### Part for Wall
+partwall = myModel.Part(name="wall", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partwall = myModel.parts["wall"]
+partwall.BaseSolidExtrude(sketch=s, depth=hwall)
+p = myModel.parts["wall"]
+
+### Partition cover for Wall
+p.DatumPlaneByPrincipalPlane(principalPlane=YZPLANE, offset=-lwall / 2 + cover)
+p.DatumPlaneByPrincipalPlane(principalPlane=YZPLANE, offset=lwall / 2 - cover)
+p.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=-twall / 2 + cover)
+p.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=twall / 2 - cover)
+c = p.cells
+d = p.datums
+pickedCells = c.findAt(((0, 0, 1),))
+p.PartitionCellByDatumPlane(datumPlane=d[2], cells=pickedCells)
+pickedCells = c.findAt(((0, 0, 1),))
+p.PartitionCellByDatumPlane(datumPlane=d[3], cells=pickedCells)
+pickedCells = c.findAt(((0, 0, 1),))
+p.PartitionCellByDatumPlane(datumPlane=d[4], cells=pickedCells)
+pickedCells = c.findAt(((0, 0, 1),))
+p.PartitionCellByDatumPlane(datumPlane=d[5], cells=pickedCells)
+
+##tube
+s = myModel.ConstrainedSketch(name="tube", sheetSize=dtube)
+s.setPrimaryObject(option=STANDALONE)
+s.CircleByCenterPerimeter(center=(0, 0), point1=(dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(0, 0), point1=(dtube / 2 - ttube, 0))
+parttube = myModel.Part(name="tube", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+parttube = myModel.parts["tube"]
+parttube.BaseSolidExtrude(sketch=s, depth=hwall + hbl + hfd)
+
+## in-concrete
+s = myModel.ConstrainedSketch(name="in-Concrete", sheetSize=dtube)
+s.setPrimaryObject(option=STANDALONE)
+s.CircleByCenterPerimeter(center=(0, 0), point1=(dtube / 2 - ttube, 0))
+partincon = myModel.Part(name="in-concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partincon = myModel.parts["in-concrete"]
+partincon.BaseSolidExtrude(sketch=s, depth=hwall + hbl + hfd)
+
+## foundation-concrete
+s = myModel.ConstrainedSketch(name="foundation-Concrete", sheetSize=lfd)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(-lfd / 2, -tfd / 2), point2=(lfd / 2, tfd / 2))
+s.CircleByCenterPerimeter(center=(-offset1, 0), point1=(-offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(offset1, 0), point1=(offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset2, 0), point1=(-offset2 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(offset2, 0), point1=(offset2 + dtube / 2, 0))
+partfoundation = myModel.Part(name="foundation-Concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partfoundation = myModel.parts["foundation-Concrete"]
+partfoundation.BaseSolidExtrude(sketch=s, depth=hfd)
+
+##loadbeam-concrete
+s = myModel.ConstrainedSketch(name="loadbeam-Concrete", sheetSize=lbl)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(-lbl / 2, -tbl / 2), point2=(lbl / 2, tbl / 2))
+s.CircleByCenterPerimeter(center=(-offset1, 0), point1=(-offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(offset1, 0), point1=(offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset2, 0), point1=(-offset2 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(offset2, 0), point1=(offset2 + dtube / 2, 0))
+partloadbeam = myModel.Part(name="loadbeam-Concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partloadbeam = myModel.parts["loadbeam-Concrete"]
+partloadbeam.BaseSolidExtrude(sketch=s, depth=hbl)
+
+##rebar
+s = myModel.ConstrainedSketch(name="sheerwall-long-steel", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.Line(point1=(0.0, 0.0), point2=(hwall - 2 * cover, 0.0))
+p = myModel.Part(name="shellwall-long-steel", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["shellwall-long-steel"]
+p.BaseWire(sketch=s)
+
+s = myModel.ConstrainedSketch(name="foundation-long-steel", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.Line(point1=(0.0, 0.0), point2=(lfd - 2 * cover, 0.0))
+p = myModel.Part(name="foundation-long-steel", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["foundation-long-steel"]
+p.BaseWire(sketch=s)
+
+s = myModel.ConstrainedSketch(name="foundation-hoop", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(0, 0), point2=(hfd - 2 * cover, tfd / 2 + dtube / 2))
+p = myModel.Part(name="foundation-hoop", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["foundation-hoop"]
+p.BaseWire(sketch=s)
+
+s = myModel.ConstrainedSketch(name="loadbeam-long-steel", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.Line(point1=(0.0, 0.0), point2=(lbl - 2 * cover, 0.0))
+p = myModel.Part(name="loadbeam-long-steel", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["loadbeam-long-steel"]
+p.BaseWire(sketch=s)
+
+s = myModel.ConstrainedSketch(name="loadbeam-hoop", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(-(tbl / 2 - cover), -(hbl / 2 - cover)), point2=((tbl / 2 - cover), (hbl / 2 - cover)))
+p = myModel.Part(name="loadbeam-hoop", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["loadbeam-hoop"]
+p.BaseWire(sketch=s)
+
+# size define of sheerwall hoop
+hooplength = float(offset1 - offset2)
+hoopwidth = float(twall - 2 * cover)
+hooplength2 = float(3 * offset2 / 2 - offset1 / 2)
+
+##hoop
+s = myModel.ConstrainedSketch(name="sheerwall-hoop-1", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(-hooplength / 2, -hoopwidth / 2), point2=(hooplength / 2, hoopwidth / 2))
+p = myModel.Part(name="sheerwall-hoop-1", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["sheerwall-hoop-1"]
+p.BaseWire(sketch=s)
+
+##hoop
+s = myModel.ConstrainedSketch(name="sheerwall-hoop-2", sheetSize=3000)
+s.setPrimaryObject(option=STANDALONE)
+s.rectangle(point1=(-hooplength2 / 2, -hoopwidth / 2), point2=(hooplength2 / 2, hoopwidth / 2))
+p = myModel.Part(name="sheerwall-hoop-2", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.parts["sheerwall-hoop-2"]
+p.BaseWire(sketch=s)
+
+# material
+
+# section
+
+# property
+
+# assembly
