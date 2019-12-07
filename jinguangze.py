@@ -205,9 +205,193 @@ p = myModel.parts["sheerwall-hoop-2"]
 p.BaseWire(sketch=s)
 
 # material
+myModel = mdb.models[modelname]
+myModel.Material(name = "In-Concrete")
+myModel.materials["In-Concrete"].Elastic(table = ((37500.0, 0.2), ))
+myModel.materials["In-Concrete"].Density(table = ((2.5e-09, ), ))
+myModel.Material(name = "Out-Concrete")
+myModel.materials["Out-Concrete"].Elastic(table = ((35500.0, 0.2), ))
+myModel.materials["Out-Concrete"].Density(table = ((2.5e-09, ), ))
+myModel.Material(name="cover-concrete")
+myModel.materials["cover-concrete"].Elastic(table=((35500.0, 0.2),))
+myModel.materials["cover-concrete"].Density(table=((2.5e-09,),))
+myModel.Material(name="rigid-body")
+myModel.materials["rigid-body"].Elastic(table=((38000, 0.2),))
+myModel.materials["rigid-body"].Density(table=((2.5e-09,),))
+myModel.Material(name="tube")
+myModel.materials["tube"].Density(table=((7.85e-09,),))
+myModel.materials["tube"].Elastic(table=((200000, 0.3),))
+myModel.materials["tube"].Plastic(table=((fytube, 0),))
+myModel.Material(name="rebar-l")
+myModel.materials["rebar-l"].Density(table=((7.85e-09,),))
+myModel.materials["rebar-l"].Elastic(table=((200000, 0.3),))
+myModel.materials["rebar-l"].Plastic(hardening=ISOTROPIC, table=((fylbar, 0.0),))
+myModel.Material(name="rebar-t")
+myModel.materials["rebar-t"].Density(table=((7.85e-09,),))
+myModel.materials["rebar-t"].Elastic(table=((200000, 0.3),))
+myModel.materials["rebar-t"].Plastic(hardening=ISOTROPIC, table=((fytbar, 0.0),))
+myModel.Material(name="rebar-rigid")
+myModel.materials["rebar-rigid"].Density(table=((7.85e-09,),))
+myModel.materials["rebar-rigid"].Elastic(table=((200000, 0.3),))
+myModel.materials["rebar-rigid"].Plastic(table=((400, 0.0),))
 
 # section
+myModel.HomogeneousSolidSection(name="in-con", material="in-concrete", thickness=None)
+myModel.HomogeneousSolidSection(name="out-con", material="out-concrete", thickness=None)
+myModel.HomogeneousSolidSection(name="cover-con", material="cover-concrete", thickness=None)
+myModel.HomogeneousSolidSection(name="rigid-body", material="rigid-body", thickness=None)
+myModel.HomogeneousSolidSection(name="tube", material="tube", thickness=None)
+myModel.TrussSection(name="rebar-l", material="rebar-l", area=3.1415926 / 4 * dlbar * dlbar)
+myModel.TrussSection(name="rebar-t", material="rebar-t", area=3.1415926 / 4 * dtbar * dtbar)
+myModel.TrussSection(name="rebar-rigid", material="rebar-rigid", area=100)
 
 # property
-
+# p = mdb.models["Model-NewShearWall"].parts["foundation"]
+# region = regionToolset.Region(cells=p.cells[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rigid-body",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["loadbeam"]
+# region = regionToolset.Region(cells=p.cells[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rigid-body",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["wall"]
+# c = p.cells
+# cells = c.findAt(((1, 1, 0),))
+# region = regionToolset.Region(cells=cells)
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="out-con",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+# cells = c.findAt(
+#     ((1, twall / 2 - 1, 0),),
+#     ((1, -twall / 2 + 1, 0),),
+#     ((lwall / 2 - 1, 1, 0),),
+#     ((-lwall / 2 + 1, 1, 0),),
+# )
+# region = regionToolset.Region(cells=cells)
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="cover-con",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["tube"]
+# region = regionToolset.Region(cells=p.cells[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="tube",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["in-concrete"]
+# region = regionToolset.Region(cells=p.cells[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="in-con",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["lsteel"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-l",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["hoop1"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-t",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["hoop2"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-t",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["f-lsteel"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-rigid",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["l-lsteel"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-rigid",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["f-hoop"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-rigid",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
+#
+# p = mdb.models["Model-NewShearWall"].parts["l-hoop"]
+# region = regionToolset.Region(edges=p.edges[:])
+# p.SectionAssignment(
+#     region=region,
+#     sectionName="rebar-rigid",
+#     offset=0.0,
+#     offsetType=MIDDLE_SURFACE,
+#     offsetField="",
+#     thicknessAssignment=FROM_SECTION,
+# )
 # assembly
