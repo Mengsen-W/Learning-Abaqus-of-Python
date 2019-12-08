@@ -97,13 +97,13 @@ p.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=-twall / 2 + cover)
 p.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=twall / 2 - cover)
 c = p.cells
 d = p.datums
-pickedCells = c.findAt(((0, 0, 1),))
+pickedCells = c.findAt(((0, 0, 0),))
 p.PartitionCellByDatumPlane(datumPlane=d[2], cells=pickedCells)
-pickedCells = c.findAt(((0, 0, 1),))
+pickedCells = c.findAt(((0, 0, 0),))
 p.PartitionCellByDatumPlane(datumPlane=d[3], cells=pickedCells)
-pickedCells = c.findAt(((0, 0, 1),))
+pickedCells = c.findAt(((0, 0, 0),))
 p.PartitionCellByDatumPlane(datumPlane=d[4], cells=pickedCells)
-pickedCells = c.findAt(((0, 0, 1),))
+pickedCells = c.findAt(((0, 0, 0),))
 p.PartitionCellByDatumPlane(datumPlane=d[5], cells=pickedCells)
 
 ##tube
@@ -246,152 +246,903 @@ myModel.TrussSection(name="rebar-t", material="rebar-t", area=3.1415926 / 4 * dt
 myModel.TrussSection(name="rebar-rigid", material="rebar-rigid", area=100)
 
 # property
-# p = mdb.models["Model-NewShearWall"].parts["foundation"]
-# region = regionToolset.Region(cells=p.cells[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rigid-body",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+## foundation-Concrete
+p = mdb.models[modelname].parts["foundation-Concrete"]
+region = regionToolset.Region(cells=p.cells[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rigid-body",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## loadbeam-Concrete
+p = mdb.models[modelname].parts["loadbeam-Concrete"]
+region = regionToolset.Region(cells=p.cells[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rigid-body",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## wall
+p = mdb.models[modelname].parts["wall"]
+c = p.cells.findAt(((0, 0, 0 ),))
+region = regionToolset.Region(cells = c)
+p.SectionAssignment(
+    region=region,
+    sectionName="out-con",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## wall-cover
+cells = p.cells.findAt(
+    ((1, twall / 2 - 1, 0), ),
+    ((1, -twall / 2 + 1, 0), ),
+    ((lwall / 2 - 1, 1, 0), ),
+    ((-lwall / 2 + 1, 1, 0),),
+)
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(
+    region=region,
+    sectionName="cover-con",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## tube
+p = mdb.models[modelname].parts["tube"]
+region = regionToolset.Region(cells=p.cells[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="tube",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## in-concrete
+p = mdb.models[modelname].parts["in-concrete"]
+region = regionToolset.Region(cells=p.cells[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="in-con",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## sheerwall-long-steel
+p = mdb.models[modelname].parts["shellwall-long-steel"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-l",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## sheerwall-hoop-1
+p = mdb.models[modelname].parts["sheerwall-hoop-1"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-t",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## sheerwall-hoop-2
+p = mdb.models[modelname].parts["sheerwall-hoop-2"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-t",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## foundation-long-steel
+p = mdb.models[modelname].parts["foundation-long-steel"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-rigid",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## loadbeam-long-steel
+p = mdb.models[modelname].parts["loadbeam-long-steel"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-rigid",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## foundation-hoop
+p = mdb.models[modelname].parts["foundation-hoop"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-rigid",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+## loadbeam-hoop
+p = mdb.models[modelname].parts["loadbeam-hoop"]
+region = regionToolset.Region(edges=p.edges[:])
+p.SectionAssignment(
+    region=region,
+    sectionName="rebar-rigid",
+    offset=0.0,
+    offsetType=MIDDLE_SURFACE,
+    offsetField="",
+    thicknessAssignment=FROM_SECTION,
+)
+
+# assembly
+a = myModel.rootAssembly
+#session.viewports["Viewport: 1"].setValues(displayedObject=a)
+a.DatumCsysByDefault(CARTESIAN)
+
+p = myModel.parts["wall"]
+a.Instance(name="wall", part=p, dependent=ON)
+
+p = myModel.parts["foundation-Concrete"]
+a.Instance(name="foundation-Concrete", part=p, dependent=ON)
+
+p = myModel.parts["loadbeam-Concrete"]
+a.Instance(name="loadbeam-Concrete", part=p, dependent=ON)
+
+p = myModel.parts["tube"]
+a.Instance(name="tube1", part=p, dependent=ON)
+a.Instance(name="tube2", part=p, dependent=ON)
+a.Instance(name="tube3", part=p, dependent=ON)
+a.Instance(name="tube4", part=p, dependent=ON)
+
+p = myModel.parts["in-concrete"]
+a.Instance(name="in-concrete1", part=p, dependent=ON)
+a.Instance(name="in-concrete2", part=p, dependent=ON)
+a.Instance(name="in-concrete3", part=p, dependent=ON)
+a.Instance(name="in-concrete4", part=p, dependent=ON)
+
+p = myModel.parts["shellwall-long-steel"]
+for i in range(1, 15):
+    i = str(i)
+    a.Instance(name="sheerwall-long-steel-" + i, part=p, dependent=ON)
+
+hoopnum = int((hwall - 2 * cover) / space) + 1
+p = myModel.parts["sheerwall-hoop-1"]
+for i in range(1, hoopnum + 1):
+    a.Instance(name="sheerwall-hoop-11-" + str(i), part=p, dependent=ON)
+    a.Instance(name="sheerwall-hoop-12-" + str(i), part=p, dependent=ON)
+    a.Instance(name="sheerwall-hoop-13-" + str(i), part=p, dependent=ON)
+    a.Instance(name="sheerwall-hoop-14-" + str(i), part=p, dependent=ON)
+p = myModel.parts["sheerwall-hoop-2"]
+for i in range(1, hoopnum + 1):
+    a.Instance(name="sheerwall-hoop21-" + str(i), part=p, dependent=ON)
+    a.Instance(name="sheerwall-hoop22-" + str(i), part=p, dependent=ON)
+
+lhoopnum = int((lbl / 2 - offset1 - dtube / 2 - 2 * cover) / 50) + 1
+fhoopnum = int((lfd / 2 - offset1 - dtube / 2 - 2 * cover) / 50) + 1
+midhoopnum = int((2 * offset2 - dtube - 2 * cover) / 50) + 1
+
+p = myModel.parts["loadbeam-hoop"]
+for i in range(1, lhoopnum + 1):
+    a.Instance(name="loadbeam-hoop1-" + str(i), part=p, dependent=ON)
+    a.Instance(name="loadbeam-hoop2-" + str(i), part=p, dependent=ON)
+for i in range(1, midhoopnum + 1):
+    a.Instance(name="loadbeam-hoop3-" + str(i), part=p, dependent=ON)
+p = myModel.parts["foundation-hoop"]
+for i in range(1, fhoopnum + 1):
+    a.Instance(name="foundation-hoop1-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop2-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop3-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop4-" + str(i), part=p, dependent=ON)
+for i in range(1, midhoopnum + 1):
+    a.Instance(name="foundation-hoop5-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop6-" + str(i), part=p, dependent=ON)
+
+for i in range(1, midhoopnum + 1):
+    a = mdb.models[modelname].rootAssembly
+    a.rotate(
+        instanceList=("loadbeam-hoop3-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=-90.0,
+    )
+    a.rotate(
+        instanceList=("foundation-hoop5-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=90.0,
+    )
+    a.rotate(
+        instanceList=("foundation-hoop6-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=90.0,
+    )
+
+for i in range(1, lhoopnum + 1):
+    a = mdb.models[modelname].rootAssembly
+    a.rotate(
+        instanceList=("loadbeam-hoop1-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=-90.0,
+    )
+    a.rotate(
+        instanceList=("loadbeam-hoop2-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=-90.0,
+    )
+
+for i in range(1, fhoopnum + 1):
+    a = mdb.models[modelname].rootAssembly
+    a.rotate(
+        instanceList=("foundation-hoop1-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=90.0,
+    )
+    a.rotate(
+        instanceList=("foundation-hoop2-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=90.0,
+    )
+    a.rotate(
+        instanceList=("foundation-hoop3-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=90.0,
+    )
+    a.rotate(
+        instanceList=("foundation-hoop4-" + str(i),),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=90.0,
+    )
+
+p = myModel.parts["foundation-long-steel"]
+for i in range(1, 9):
+    a.Instance(name="foundation-long-steel-" + str(i), part=p, dependent=ON)
+p = myModel.parts["loadbeam-long-steel"]
+for i in range(1, 5):
+    a.Instance(name="loadbeam-long-steel-" + str(i), part=p, dependent=ON)
+
+# install
+a.translate(instanceList=("foundation-Concrete",), vector=(0.0, 0.0, -hfd))
+a.translate(instanceList=("loadbeam-Concrete",), vector=(0.0, 0.0, hwall))
+a.translate(instanceList=("tube1",), vector=(offset1, 0.0, -hfd))
+a.translate(instanceList=("tube2",), vector=(-offset1, 0.0, -hfd))
+a.translate(instanceList=("tube3",), vector=(offset2, 0.0, -hfd))
+a.translate(instanceList=("tube4",), vector=(-offset2, 0.0, -hfd))
+a.translate(instanceList=("in-concrete1",), vector=(offset1, 0.0, -hfd))
+a.translate(instanceList=("in-concrete2",), vector=(-offset1, 0.0, -hfd))
+a.translate(instanceList=("in-concrete3",), vector=(offset2, 0.0, -hfd))
+a.translate(instanceList=("in-concrete4",), vector=(-offset2, 0.0, -hfd))
+for i in range(1, 15):
+    i = str(i)
+    a.rotate(
+        instanceList=("sheerwall-long-steel-" + i,),
+        axisPoint=(0.0, 0.0, 0.0),
+        axisDirection=(0.0, 1, 0.0),
+        angle=-90.0,
+    )
+
+a.translate(
+    instanceList=("sheerwall-long-steel-1",),
+    vector=(-(offset1 * 1.5 - offset2 / 2), twall / 2 - cover, cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-2",),
+    vector=(offset1 * 1.5 - offset2 / 2, twall / 2 - cover, cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-3",),
+    vector=(-(offset1 * 1.5 - offset2 / 2), -(twall / 2 - cover), cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-4",),
+    vector=(offset1 * 1.5 - offset2 / 2, -(twall / 2 - cover), cover),
+)
+
+a.translate(
+    instanceList=("sheerwall-long-steel-5",),
+    vector=(-(offset1 + offset2) / 2, twall / 2 - cover, cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-6",),
+    vector=((offset1 + offset2) / 2, twall / 2 - cover, cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-7",),
+    vector=(-(offset1 + offset2) / 2, -(twall / 2 - cover), cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-8",),
+    vector=((offset1 + offset2) / 2, -(twall / 2 - cover), cover),
+)
+
+a.translate(
+    instanceList=("sheerwall-long-steel-9",),
+    vector=(-(offset2 * 1.5 - offset1 / 2), twall / 2 - cover, cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-10",),
+    vector=(offset2 * 1.5 - offset1 / 2, twall / 2 - cover, cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-11",),
+    vector=(-(offset2 * 1.5 - offset1 / 2), -(twall / 2 - cover), cover),
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-12",),
+    vector=(offset2 * 1.5 - offset1 / 2, -(twall / 2 - cover), cover),
+)
+
+a.translate(
+    instanceList=("sheerwall-long-steel-13",),
+    vector=(0, twall / 2 - cover, cover)
+)
+a.translate(
+    instanceList=("sheerwall-long-steel-14",),
+    vector=(0, -(twall / 2 - cover), cover)
+)
+
+for i in range(1, hoopnum + 1):
+    a.translate(
+        instanceList=("sheerwall-hoop11-" + str(i),), vector=(offset1, 0, cover + (i - 1) * space)
+    )
+    a.translate(
+        instanceList=("sheerwall-hoop12-" + str(i),),
+        vector=(-offset1, 0, cover + (i - 1) * space + dtbar),
+    )
+    a.translate(
+        instanceList=("sheerwall-hoop13-" + str(i),),
+        vector=(offset2, 0, cover + (i - 1) * space + dtbar),
+    )
+    a.translate(
+        instanceList=("sheerwall-hoop14-" + str(i),),
+        vector=(-offset2, 0, cover + (i - 1) * space),
+    )
+    a.translate(
+        instanceList=("sheerwall-hoop21-" + str(i),),
+        vector=((hooplength2) / 2, 0, cover + (i - 1) * space),
+    )
+    a.translate(
+        instanceList=("sheerwall-hoop22-" + str(i),),
+        vector=(-(hooplength2) / 2, 0, cover + (i - 1) * space + dtbar),
+    )
+
+for i in range(1, fhoopnum + 1):
+    a.translate(
+        instanceList=("foundation-hoop1-" + str(i),),
+        vector=(lfd / 2 - cover - (i - 1) * 50, -(tfd / 2 - cover), -cover),
+    )
+    a.translate(
+        instanceList=("foundation-hoop2-" + str(i),),
+        vector=(lfd / 2 - cover - (i - 1) * 50, -(dtube / 2 + cover), -cover),
+    )
+    a.translate(
+        instanceList=("foundation-hoop3-" + str(i),),
+        vector=(-(lfd / 2 - cover - (i - 1) * 50), -(tfd / 2 - cover), -cover),
+    )
+    a.translate(
+        instanceList=("foundation-hoop4-" + str(i),),
+        vector=(-(lfd / 2 - cover - (i - 1) * 50), -(dtube / 2 + cover), -cover),
+    )
+
+for i in range(1, lhoopnum + 1):
+    a.translate(
+        instanceList=("loadbeam-hoop1-" + str(i),),
+        vector=(lbl / 2 - cover - (i - 1) * 50, 0, hwall + hbl / 2),
+    )
+    a.translate(
+        instanceList=("loadbeam-hoop2-" + str(i),),
+        vector=(-(lbl / 2 - cover - (i - 1) * 50), 0, hwall + hbl / 2),
+    )
+for i in range(1, midhoopnum + 1):
+    a.translate(
+        instanceList=("loadbeam-hoop3-" + str(i),),
+        vector=(((-1) ** i) * (int(i / 2)) * 50, 0, hwall + hbl / 2),
+    )
+    a.translate(
+        instanceList=("foudation-hoop5-" + str(i),),
+        vector=(((-1) ** i) * (int(i / 2)) * 50, -(dtube / 2 + cover), -cover),
+    )
+    a.translate(
+        instanceList=("foundation-hoop6-" + str(i),),
+        vector=(((-1) ** i) * (int(i / 2)) * 50, -(tfd / 2 - cover), -cover),
+    )
+
+a.translate(
+    instanceList=("foundation-long-steel-1",), vector=(-lfd / 2 + cover, tfd / 2 - cover, -cover)
+)
+a.translate(
+    instanceList=("foundation-long-steel-2",), vector=(-lfd / 2 + cover, -(tfd / 2 - cover), -cover)
+)
+a.translate(
+    instanceList=("foundation-long-steel-3",),
+    vector=(-lfd / 2 + cover, -(tfd / 2 - cover), -hfd + cover),
+)
+a.translate(
+    instanceList=("foundation-long-steel-4",),
+    vector=(-lfd / 2 + cover, tfd / 2 - cover, -hfd + cover),
+)
+a.translate(
+    instanceList=("foundation-long-steel-5",),
+    vector=(-lfd / 2 + cover, -(dtube / 2 + cover), -cover),
+)
+a.translate(
+    instanceList=("foundation-long-steel-6",),
+    vector=(-lfd / 2 + cover, dtube / 2 + cover, -cover)
+)
+a.translate(
+    instanceList=("foundation-long-steel-7",),
+    vector=(-lfd / 2 + cover, dtube / 2 + cover, -hfd + cover),
+)
+a.translate(
+    instanceList=("foundation-long-steel-8",),
+    vector=(-lfd / 2 + cover, -(dtube / 2 + cover), -hfd + cover),
+)
+
+a.translate(
+    instanceList=("loadbeam-long-steel-1",),
+    vector=(-lbl / 2 + cover, -(tbl / 2 - cover), hwall + hbl - cover),
+)
+a.translate(
+    instanceList=("loadbeam-long-steel-2",),
+    vector=(-lbl / 2 + cover, tbl / 2 - cover, hwall + hbl - cover),
+)
+a.translate(
+    instanceList=("loadbeam-long-steel-3",),
+    vector=(-lbl / 2 + cover, -(tbl / 2 - cover), hwall + cover),
+)
+a.translate(
+    instanceList=("loadbeam-long-steel-4",),
+    vector=(-lbl / 2 + cover, tbl / 2 - cover, hwall + cover),
+)
+
+## merge-rebar & embedd rebar
+ins = (a.instances["sheerwall-long-steel-1"],)
+for i in range(2, 15):
+    ins = ins + (a.instances["sheerwall-long-steel-" + str(i)],)
+for i in range(1, hoopnum + 1):
+    ins = ins + (a.instances["sheerwall-hoop-11-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop-12-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop-13-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop-14-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop21-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop22-" + str(i)],)
+a.InstanceFromBooleanMerge(
+    name="merge-rebar", instances=ins, originalInstances=DELETE, domain=GEOMETRY
+)
+e = a.instances["merge-rebar-1"].edges
+region1 = regionToolset.Region(edges=e[:])
+mdb.models[modelname].EmbeddedRegion(
+    name="steel-embed",
+    embeddedRegion=region1,
+    hostRegion=None,
+    weightFactorTolerance=1e-06,
+    absoluteTolerance=0.0,
+    fractionalTolerance=0.05,
+    toleranceMethod=BOTH,
+)
+
+ins = (a.instances["loadbeam-long-steel-1"],)
+for i in range(2, 5):
+    ins = ins + (a.instances["loadbeam-long-steel-" + str(i)],)
+for i in range(1, lhoopnum + 1):
+    ins = ins + (a.instances["loadbeam-hoop1-" + str(i)],)
+    ins = ins + (a.instances["loadbeam-hoop2-" + str(i)],)
+for i in range(1, midhoopnum + 1):
+    ins = ins + (a.instances["loadbeam-hoop3-" + str(i)],)
+a.InstanceFromBooleanMerge(
+    name="merge-rebar-l", instances=ins, originalInstances=DELETE, domain=GEOMETRY
+)
+e = a.instances["merge-rebar-l-1"].edges
+region1 = regionToolset.Region(edges=e[:])
+mdb.models[modelname].EmbeddedRegion(
+    name="l-steel-embed",
+    embeddedRegion=region1,
+    hostRegion=None,
+    weightFactorTolerance=1e-06,
+    absoluteTolerance=0.0,
+    fractionalTolerance=0.05,
+    toleranceMethod=BOTH,
+)
+
+ins = (a.instances["foundation-long-steel-1"],)
+for i in range(2, 9):
+    ins = ins + (a.instances["foundation-long-steel-" + str(i)],)
+for i in range(1, fhoopnum + 1):
+    ins = ins + (a.instances["foundation-hoop1-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop2-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop3-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop4-" + str(i)],)
+for i in range(1, midhoopnum + 1):
+    ins = ins + (a.instances["foundation-hoop5-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop6-" + str(i)],)
+a.InstanceFromBooleanMerge(
+    name="merge-rebar-f", instances=ins, originalInstances=DELETE, domain=GEOMETRY
+)
+e = a.instances["merge-rebar-f-1"].edges
+region1 = regionToolset.Region(edges=e[:])
+mdb.models[modelname].EmbeddedRegion(
+    name="f-steel-embed",
+    embeddedRegion=region1,
+    hostRegion=None,
+    weightFactorTolerance=1e-06,
+    absoluteTolerance=0.0,
+    fractionalTolerance=0.05,
+    toleranceMethod=BOTH,
+)
+
+# interaction
+# a1 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a1.instances["wall"].faces
+# side1Faces1 = s1.findAt(
+#     ((1, 1, hwall),),
+#     ((1, twall / 2 - 1, hwall),),
+#     ((1, -twall / 2 + 1, hwall),),
+#     ((lwall / 2 - 1, 1, hwall),),
+#     ((-lwall / 2 + 1, 1, hwall),),
+# )
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a1 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a1.instances["loadbeam"].faces
+# side1Faces1 = s1.findAt(((1, 1, hwall),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="wall-loadbeam",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["loadbeam"]
-# region = regionToolset.Region(cells=p.cells[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rigid-body",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
-# )
-#
-# p = mdb.models["Model-NewShearWall"].parts["wall"]
-# c = p.cells
-# cells = c.findAt(((1, 1, 0),))
-# region = regionToolset.Region(cells=cells)
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="out-con",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
-# )
-# cells = c.findAt(
+# a2 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a2.instances["foundation"].faces
+# side1Faces1 = s1.findAt(((1, 1, 0),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a2 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a2.instances["wall"].faces
+# side1Faces1 = s1.findAt(
+#     ((1, 1, 0),),
 #     ((1, twall / 2 - 1, 0),),
 #     ((1, -twall / 2 + 1, 0),),
 #     ((lwall / 2 - 1, 1, 0),),
 #     ((-lwall / 2 + 1, 1, 0),),
 # )
-# region = regionToolset.Region(cells=cells)
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="cover-con",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="wall-foundation",
+#     master=region2,
+#     slave=region1,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["tube"]
-# region = regionToolset.Region(cells=p.cells[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="tube",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube1"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["wall"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="wall-tube1",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["in-concrete"]
-# region = regionToolset.Region(cells=p.cells[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="in-con",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube2"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["wall"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="wall-tube2",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["lsteel"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-l",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube3"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["wall"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="wall-tube3",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["hoop1"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-t",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube4"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["wall"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="wall-tube4",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["hoop2"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-t",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube1"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2, 0, -1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["foundation"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2, 0, -1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="fd-tube1",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["f-lsteel"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-rigid",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube2"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2, 0, -1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["foundation"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2, 0, -1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="fd-tube2",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["l-lsteel"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-rigid",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube3"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2, 0, -1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["foundation"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2, 0, -1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="fd-tube3",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["f-hoop"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-rigid",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube4"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2, 0, -1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["foundation"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2, 0, -1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="fd-tube4",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
 #
-# p = mdb.models["Model-NewShearWall"].parts["l-hoop"]
-# region = regionToolset.Region(edges=p.edges[:])
-# p.SectionAssignment(
-#     region=region,
-#     sectionName="rebar-rigid",
-#     offset=0.0,
-#     offsetType=MIDDLE_SURFACE,
-#     offsetField="",
-#     thicknessAssignment=FROM_SECTION,
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube1"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2, 0, hwall + 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["loadbeam"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2, 0, hwall + 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="lb-tube1",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
 # )
-# assembly
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube2"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2, 0, hwall + 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["loadbeam"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2, 0, hwall + 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="lb-tube2",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube3"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2, 0, hwall + 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["loadbeam"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2, 0, hwall + 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="lb-tube3",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube4"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2, 0, hwall + 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["loadbeam"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2, 0, hwall + 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="lb-tube4",
+#     master=region1,
+#     slave=region2,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube1"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2 - ttube, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["in-concrete1"].faces
+# side1Faces1 = s1.findAt(((offset1 + dtube / 2 - ttube, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="incon-tube1",
+#     master=region2,
+#     slave=region1,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube2"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2 - ttube, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["in-concrete2"].faces
+# side1Faces1 = s1.findAt(((-offset1 + dtube / 2 - ttube, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="incon-tube2",
+#     master=region2,
+#     slave=region1,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube3"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2 - ttube, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["in-concrete3"].faces
+# side1Faces1 = s1.findAt(((offset2 + dtube / 2 - ttube, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="incon-tube3",
+#     master=region2,
+#     slave=region1,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
+#
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["tube4"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2 - ttube, 0, hwall - 1),))
+# region1 = regionToolset.Region(side1Faces=side1Faces1)
+# a4 = mdb.models["Model-NewShearWall"].rootAssembly
+# s1 = a4.instances["in-concrete4"].faces
+# side1Faces1 = s1.findAt(((-offset2 + dtube / 2 - ttube, 0, hwall - 1),))
+# region2 = regionToolset.Region(side1Faces=side1Faces1)
+# mdb.models["Model-NewShearWall"].Tie(
+#     name="incon-tube4",
+#     master=region2,
+#     slave=region1,
+#     positionToleranceMethod=COMPUTED,
+#     adjust=ON,
+#     tieRotations=ON,
+#     thickness=ON,
+# )
