@@ -73,24 +73,27 @@ meshsize = float(meshsize)
 space = float(space)
 
 # part
-## wall
+# wall
 
-### Sketch for Wall
+# Sketch for Wall
 s = myModel.ConstrainedSketch(name=modelname, sheetSize=lwall)
 s.setPrimaryObject(option=STANDALONE)
 s.rectangle(point1=(-lwall / 2, -twall / 2), point2=(lwall / 2, twall / 2))
-s.CircleByCenterPerimeter(center=(-offset1, 0), point1=(-offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset1, 0),
+                          point1=(-offset1 + dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(offset1, 0), point1=(offset1 + dtube / 2, 0))
-s.CircleByCenterPerimeter(center=(-offset2, 0), point1=(-offset2 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset2, 0),
+                          point1=(-offset2 + dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(offset2, 0), point1=(offset2 + dtube / 2, 0))
 
-### Part for Wall
-partwall = myModel.Part(name="wall", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+# Part for Wall
+partwall = myModel.Part(
+    name="wall", dimensionality=THREE_D, type=DEFORMABLE_BODY)
 partwall = myModel.parts["wall"]
 partwall.BaseSolidExtrude(sketch=s, depth=hwall)
 p = myModel.parts["wall"]
 
-### Partition cover for Wall
+# Partition cover for Wall
 p.DatumPlaneByPrincipalPlane(principalPlane=YZPLANE, offset=-lwall / 2 + cover)
 p.DatumPlaneByPrincipalPlane(principalPlane=YZPLANE, offset=lwall / 2 - cover)
 p.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=-twall / 2 + cover)
@@ -106,80 +109,94 @@ p.PartitionCellByDatumPlane(datumPlane=d[4], cells=pickedCells)
 pickedCells = c.findAt(((0, 0, 0),))
 p.PartitionCellByDatumPlane(datumPlane=d[5], cells=pickedCells)
 
-##tube
+# tube
 s = myModel.ConstrainedSketch(name="tube", sheetSize=dtube)
 s.setPrimaryObject(option=STANDALONE)
 s.CircleByCenterPerimeter(center=(0, 0), point1=(dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(0, 0), point1=(dtube / 2 - ttube, 0))
-parttube = myModel.Part(name="tube", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+parttube = myModel.Part(
+    name="tube", dimensionality=THREE_D, type=DEFORMABLE_BODY)
 parttube = myModel.parts["tube"]
 parttube.BaseSolidExtrude(sketch=s, depth=hwall + hbl + hfd)
 
-## in-concrete
+# in-concrete
 s = myModel.ConstrainedSketch(name="in-Concrete", sheetSize=dtube)
 s.setPrimaryObject(option=STANDALONE)
 s.CircleByCenterPerimeter(center=(0, 0), point1=(dtube / 2 - ttube, 0))
-partincon = myModel.Part(name="in-concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partincon = myModel.Part(
+    name="in-concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
 partincon = myModel.parts["in-concrete"]
 partincon.BaseSolidExtrude(sketch=s, depth=hwall + hbl + hfd)
 
-## foundation-concrete
+# foundation-concrete
 s = myModel.ConstrainedSketch(name="foundation-Concrete", sheetSize=lfd)
 s.setPrimaryObject(option=STANDALONE)
 s.rectangle(point1=(-lfd / 2, -tfd / 2), point2=(lfd / 2, tfd / 2))
-s.CircleByCenterPerimeter(center=(-offset1, 0), point1=(-offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset1, 0),
+                          point1=(-offset1 + dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(offset1, 0), point1=(offset1 + dtube / 2, 0))
-s.CircleByCenterPerimeter(center=(-offset2, 0), point1=(-offset2 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset2, 0),
+                          point1=(-offset2 + dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(offset2, 0), point1=(offset2 + dtube / 2, 0))
-partfoundation = myModel.Part(name="foundation-Concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partfoundation = myModel.Part(
+    name="foundation-Concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
 partfoundation = myModel.parts["foundation-Concrete"]
 partfoundation.BaseSolidExtrude(sketch=s, depth=hfd)
 
-##loadbeam-concrete
+# loadbeam-concrete
 s = myModel.ConstrainedSketch(name="loadbeam-Concrete", sheetSize=lbl)
 s.setPrimaryObject(option=STANDALONE)
 s.rectangle(point1=(-lbl / 2, -tbl / 2), point2=(lbl / 2, tbl / 2))
-s.CircleByCenterPerimeter(center=(-offset1, 0), point1=(-offset1 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset1, 0),
+                          point1=(-offset1 + dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(offset1, 0), point1=(offset1 + dtube / 2, 0))
-s.CircleByCenterPerimeter(center=(-offset2, 0), point1=(-offset2 + dtube / 2, 0))
+s.CircleByCenterPerimeter(center=(-offset2, 0),
+                          point1=(-offset2 + dtube / 2, 0))
 s.CircleByCenterPerimeter(center=(offset2, 0), point1=(offset2 + dtube / 2, 0))
-partloadbeam = myModel.Part(name="loadbeam-Concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+partloadbeam = myModel.Part(
+    name="loadbeam-Concrete", dimensionality=THREE_D, type=DEFORMABLE_BODY)
 partloadbeam = myModel.parts["loadbeam-Concrete"]
 partloadbeam.BaseSolidExtrude(sketch=s, depth=hbl)
 
-##rebar
+# rebar
 s = myModel.ConstrainedSketch(name="sheerwall-long-steel", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
 s.Line(point1=(0.0, 0.0), point2=(hwall - 2 * cover, 0.0))
-p = myModel.Part(name="shellwall-long-steel", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.Part(name="shellwall-long-steel",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["shellwall-long-steel"]
 p.BaseWire(sketch=s)
 
 s = myModel.ConstrainedSketch(name="foundation-long-steel", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
 s.Line(point1=(0.0, 0.0), point2=(lfd - 2 * cover, 0.0))
-p = myModel.Part(name="foundation-long-steel", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.Part(name="foundation-long-steel",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["foundation-long-steel"]
 p.BaseWire(sketch=s)
 
 s = myModel.ConstrainedSketch(name="foundation-hoop", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
 s.rectangle(point1=(0, 0), point2=(hfd - 2 * cover, tfd / 2 + dtube / 2))
-p = myModel.Part(name="foundation-hoop", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.Part(name="foundation-hoop",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["foundation-hoop"]
 p.BaseWire(sketch=s)
 
 s = myModel.ConstrainedSketch(name="loadbeam-long-steel", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
 s.Line(point1=(0.0, 0.0), point2=(lbl - 2 * cover, 0.0))
-p = myModel.Part(name="loadbeam-long-steel", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+p = myModel.Part(name="loadbeam-long-steel",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["loadbeam-long-steel"]
 p.BaseWire(sketch=s)
 
 s = myModel.ConstrainedSketch(name="loadbeam-hoop", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
-s.rectangle(point1=(-(tbl / 2 - cover), -(hbl / 2 - cover)), point2=((tbl / 2 - cover), (hbl / 2 - cover)))
-p = myModel.Part(name="loadbeam-hoop", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+s.rectangle(point1=(-(tbl / 2 - cover), -(hbl / 2 - cover)),
+            point2=((tbl / 2 - cover), (hbl / 2 - cover)))
+p = myModel.Part(name="loadbeam-hoop",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["loadbeam-hoop"]
 p.BaseWire(sketch=s)
 
@@ -188,30 +205,34 @@ hooplength = float(offset1 - offset2)
 hoopwidth = float(twall - 2 * cover)
 hooplength2 = float(3 * offset2 / 2 - offset1 / 2)
 
-##hoop
+# hoop
 s = myModel.ConstrainedSketch(name="sheerwall-hoop-1", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
-s.rectangle(point1=(-hooplength / 2, -hoopwidth / 2), point2=(hooplength / 2, hoopwidth / 2))
-p = myModel.Part(name="sheerwall-hoop-1", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+s.rectangle(point1=(-hooplength / 2, -hoopwidth / 2),
+            point2=(hooplength / 2, hoopwidth / 2))
+p = myModel.Part(name="sheerwall-hoop-1",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["sheerwall-hoop-1"]
 p.BaseWire(sketch=s)
 
-##hoop
+# hoop
 s = myModel.ConstrainedSketch(name="sheerwall-hoop-2", sheetSize=3000)
 s.setPrimaryObject(option=STANDALONE)
-s.rectangle(point1=(-hooplength2 / 2, -hoopwidth / 2), point2=(hooplength2 / 2, hoopwidth / 2))
-p = myModel.Part(name="sheerwall-hoop-2", dimensionality=THREE_D, type=DEFORMABLE_BODY)
+s.rectangle(point1=(-hooplength2 / 2, -hoopwidth / 2),
+            point2=(hooplength2 / 2, hoopwidth / 2))
+p = myModel.Part(name="sheerwall-hoop-2",
+                 dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = myModel.parts["sheerwall-hoop-2"]
 p.BaseWire(sketch=s)
 
 # material
 myModel = mdb.models[modelname]
-myModel.Material(name = "In-Concrete")
-myModel.materials["In-Concrete"].Elastic(table = ((37500.0, 0.2), ))
-myModel.materials["In-Concrete"].Density(table = ((2.5e-09, ), ))
-myModel.Material(name = "Out-Concrete")
-myModel.materials["Out-Concrete"].Elastic(table = ((35500.0, 0.2), ))
-myModel.materials["Out-Concrete"].Density(table = ((2.5e-09, ), ))
+myModel.Material(name="In-Concrete")
+myModel.materials["In-Concrete"].Elastic(table=((37500.0, 0.2), ))
+myModel.materials["In-Concrete"].Density(table=((2.5e-09, ), ))
+myModel.Material(name="Out-Concrete")
+myModel.materials["Out-Concrete"].Elastic(table=((35500.0, 0.2), ))
+myModel.materials["Out-Concrete"].Density(table=((2.5e-09, ), ))
 myModel.Material(name="cover-concrete")
 myModel.materials["cover-concrete"].Elastic(table=((35500.0, 0.2),))
 myModel.materials["cover-concrete"].Density(table=((2.5e-09,),))
@@ -225,28 +246,36 @@ myModel.materials["tube"].Plastic(table=((fytube, 0),))
 myModel.Material(name="rebar-l")
 myModel.materials["rebar-l"].Density(table=((7.85e-09,),))
 myModel.materials["rebar-l"].Elastic(table=((200000, 0.3),))
-myModel.materials["rebar-l"].Plastic(hardening=ISOTROPIC, table=((fylbar, 0.0),))
+myModel.materials["rebar-l"].Plastic(hardening=ISOTROPIC,
+                                     table=((fylbar, 0.0),))
 myModel.Material(name="rebar-t")
 myModel.materials["rebar-t"].Density(table=((7.85e-09,),))
 myModel.materials["rebar-t"].Elastic(table=((200000, 0.3),))
-myModel.materials["rebar-t"].Plastic(hardening=ISOTROPIC, table=((fytbar, 0.0),))
+myModel.materials["rebar-t"].Plastic(hardening=ISOTROPIC,
+                                     table=((fytbar, 0.0),))
 myModel.Material(name="rebar-rigid")
 myModel.materials["rebar-rigid"].Density(table=((7.85e-09,),))
 myModel.materials["rebar-rigid"].Elastic(table=((200000, 0.3),))
 myModel.materials["rebar-rigid"].Plastic(table=((400, 0.0),))
 
 # section
-myModel.HomogeneousSolidSection(name="in-con", material="in-concrete", thickness=None)
-myModel.HomogeneousSolidSection(name="out-con", material="out-concrete", thickness=None)
-myModel.HomogeneousSolidSection(name="cover-con", material="cover-concrete", thickness=None)
-myModel.HomogeneousSolidSection(name="rigid-body", material="rigid-body", thickness=None)
+myModel.HomogeneousSolidSection(
+    name="in-con", material="in-concrete", thickness=None)
+myModel.HomogeneousSolidSection(
+    name="out-con", material="out-concrete", thickness=None)
+myModel.HomogeneousSolidSection(
+    name="cover-con", material="cover-concrete", thickness=None)
+myModel.HomogeneousSolidSection(
+    name="rigid-body", material="rigid-body", thickness=None)
 myModel.HomogeneousSolidSection(name="tube", material="tube", thickness=None)
-myModel.TrussSection(name="rebar-l", material="rebar-l", area=3.1415926 / 4 * dlbar * dlbar)
-myModel.TrussSection(name="rebar-t", material="rebar-t", area=3.1415926 / 4 * dtbar * dtbar)
+myModel.TrussSection(name="rebar-l", material="rebar-l",
+                     area=3.1415926 / 4 * dlbar * dlbar)
+myModel.TrussSection(name="rebar-t", material="rebar-t",
+                     area=3.1415926 / 4 * dtbar * dtbar)
 myModel.TrussSection(name="rebar-rigid", material="rebar-rigid", area=100)
 
 # property
-## foundation-Concrete
+# foundation-Concrete
 p = mdb.models[modelname].parts["foundation-Concrete"]
 region = regionToolset.Region(cells=p.cells[:])
 p.SectionAssignment(
@@ -258,7 +287,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## loadbeam-Concrete
+# loadbeam-Concrete
 p = mdb.models[modelname].parts["loadbeam-Concrete"]
 region = regionToolset.Region(cells=p.cells[:])
 p.SectionAssignment(
@@ -270,10 +299,10 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## wall
+# wall
 p = mdb.models[modelname].parts["wall"]
-c = p.cells.findAt(((0, 0, 0 ),))
-region = regionToolset.Region(cells = c)
+c = p.cells.findAt(((0, 0, 0),))
+region = regionToolset.Region(cells=c)
 p.SectionAssignment(
     region=region,
     sectionName="out-con",
@@ -283,7 +312,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## wall-cover
+# wall-cover
 cells = p.cells.findAt(
     ((1, twall / 2 - 1, 0), ),
     ((1, -twall / 2 + 1, 0), ),
@@ -300,7 +329,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## tube
+# tube
 p = mdb.models[modelname].parts["tube"]
 region = regionToolset.Region(cells=p.cells[:])
 p.SectionAssignment(
@@ -312,7 +341,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## in-concrete
+# in-concrete
 p = mdb.models[modelname].parts["in-concrete"]
 region = regionToolset.Region(cells=p.cells[:])
 p.SectionAssignment(
@@ -324,7 +353,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## sheerwall-long-steel
+# sheerwall-long-steel
 p = mdb.models[modelname].parts["shellwall-long-steel"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -336,7 +365,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## sheerwall-hoop-1
+# sheerwall-hoop-1
 p = mdb.models[modelname].parts["sheerwall-hoop-1"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -348,7 +377,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## sheerwall-hoop-2
+# sheerwall-hoop-2
 p = mdb.models[modelname].parts["sheerwall-hoop-2"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -360,7 +389,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## foundation-long-steel
+# foundation-long-steel
 p = mdb.models[modelname].parts["foundation-long-steel"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -372,7 +401,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## loadbeam-long-steel
+# loadbeam-long-steel
 p = mdb.models[modelname].parts["loadbeam-long-steel"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -384,7 +413,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## foundation-hoop
+# foundation-hoop
 p = mdb.models[modelname].parts["foundation-hoop"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -396,7 +425,7 @@ p.SectionAssignment(
     thicknessAssignment=FROM_SECTION,
 )
 
-## loadbeam-hoop
+# loadbeam-hoop
 p = mdb.models[modelname].parts["loadbeam-hoop"]
 region = regionToolset.Region(edges=p.edges[:])
 p.SectionAssignment(
@@ -448,8 +477,8 @@ for i in range(1, hoopnum + 1):
     a.Instance(name="sheerwall-hoop-14-" + str(i), part=p, dependent=ON)
 p = myModel.parts["sheerwall-hoop-2"]
 for i in range(1, hoopnum + 1):
-    a.Instance(name="sheerwall-hoop21-" + str(i), part=p, dependent=ON)
-    a.Instance(name="sheerwall-hoop22-" + str(i), part=p, dependent=ON)
+    a.Instance(name="sheerwall-hoop-21-" + str(i), part=p, dependent=ON)
+    a.Instance(name="sheerwall-hoop-22-" + str(i), part=p, dependent=ON)
 
 lhoopnum = int((lbl / 2 - offset1 - dtube / 2 - 2 * cover) / 50) + 1
 fhoopnum = int((lfd / 2 - offset1 - dtube / 2 - 2 * cover) / 50) + 1
@@ -457,36 +486,36 @@ midhoopnum = int((2 * offset2 - dtube - 2 * cover) / 50) + 1
 
 p = myModel.parts["loadbeam-hoop"]
 for i in range(1, lhoopnum + 1):
-    a.Instance(name="loadbeam-hoop1-" + str(i), part=p, dependent=ON)
-    a.Instance(name="loadbeam-hoop2-" + str(i), part=p, dependent=ON)
+    a.Instance(name="loadbeam-hoop-1-" + str(i), part=p, dependent=ON)
+    a.Instance(name="loadbeam-hoop-2-" + str(i), part=p, dependent=ON)
 for i in range(1, midhoopnum + 1):
-    a.Instance(name="loadbeam-hoop3-" + str(i), part=p, dependent=ON)
+    a.Instance(name="loadbeam-hoop-3-" + str(i), part=p, dependent=ON)
 p = myModel.parts["foundation-hoop"]
 for i in range(1, fhoopnum + 1):
-    a.Instance(name="foundation-hoop1-" + str(i), part=p, dependent=ON)
-    a.Instance(name="foundation-hoop2-" + str(i), part=p, dependent=ON)
-    a.Instance(name="foundation-hoop3-" + str(i), part=p, dependent=ON)
-    a.Instance(name="foundation-hoop4-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop-1-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop-2-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop-3-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop-4-" + str(i), part=p, dependent=ON)
 for i in range(1, midhoopnum + 1):
-    a.Instance(name="foundation-hoop5-" + str(i), part=p, dependent=ON)
-    a.Instance(name="foundation-hoop6-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop-5-" + str(i), part=p, dependent=ON)
+    a.Instance(name="foundation-hoop-6-" + str(i), part=p, dependent=ON)
 
 for i in range(1, midhoopnum + 1):
     a = mdb.models[modelname].rootAssembly
     a.rotate(
-        instanceList=("loadbeam-hoop3-" + str(i),),
+        instanceList=("loadbeam-hoop-3-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=-90.0,
     )
     a.rotate(
-        instanceList=("foundation-hoop5-" + str(i),),
+        instanceList=("foundation-hoop-5-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=90.0,
     )
     a.rotate(
-        instanceList=("foundation-hoop6-" + str(i),),
+        instanceList=("foundation-hoop-6-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=90.0,
@@ -495,13 +524,13 @@ for i in range(1, midhoopnum + 1):
 for i in range(1, lhoopnum + 1):
     a = mdb.models[modelname].rootAssembly
     a.rotate(
-        instanceList=("loadbeam-hoop1-" + str(i),),
+        instanceList=("loadbeam-hoop-1-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=-90.0,
     )
     a.rotate(
-        instanceList=("loadbeam-hoop2-" + str(i),),
+        instanceList=("loadbeam-hoop-2-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=-90.0,
@@ -510,25 +539,25 @@ for i in range(1, lhoopnum + 1):
 for i in range(1, fhoopnum + 1):
     a = mdb.models[modelname].rootAssembly
     a.rotate(
-        instanceList=("foundation-hoop1-" + str(i),),
+        instanceList=("foundation-hoop-1-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=90.0,
     )
     a.rotate(
-        instanceList=("foundation-hoop2-" + str(i),),
+        instanceList=("foundation-hoop-2-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=90.0,
     )
     a.rotate(
-        instanceList=("foundation-hoop3-" + str(i),),
+        instanceList=("foundation-hoop-3-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=90.0,
     )
     a.rotate(
-        instanceList=("foundation-hoop4-" + str(i),),
+        instanceList=("foundation-hoop-4-" + str(i),),
         axisPoint=(0.0, 0.0, 0.0),
         axisDirection=(0.0, 1, 0.0),
         angle=90.0,
@@ -623,67 +652,69 @@ a.translate(
 
 for i in range(1, hoopnum + 1):
     a.translate(
-        instanceList=("sheerwall-hoop11-" + str(i),), vector=(offset1, 0, cover + (i - 1) * space)
+        instanceList=("sheerwall-hoop-11-" + str(i),), 
+        vector=(offset1, 0, cover + (i - 1) * space)
     )
     a.translate(
-        instanceList=("sheerwall-hoop12-" + str(i),),
+        instanceList=("sheerwall-hoop-12-" + str(i),),
         vector=(-offset1, 0, cover + (i - 1) * space + dtbar),
     )
     a.translate(
-        instanceList=("sheerwall-hoop13-" + str(i),),
+        instanceList=("sheerwall-hoop-13-" + str(i),),
         vector=(offset2, 0, cover + (i - 1) * space + dtbar),
     )
     a.translate(
-        instanceList=("sheerwall-hoop14-" + str(i),),
+        instanceList=("sheerwall-hoop-14-" + str(i),),
         vector=(-offset2, 0, cover + (i - 1) * space),
     )
     a.translate(
-        instanceList=("sheerwall-hoop21-" + str(i),),
+        instanceList=("sheerwall-hoop-21-" + str(i),),
         vector=((hooplength2) / 2, 0, cover + (i - 1) * space),
     )
     a.translate(
-        instanceList=("sheerwall-hoop22-" + str(i),),
+        instanceList=("sheerwall-hoop-22-" + str(i),),
         vector=(-(hooplength2) / 2, 0, cover + (i - 1) * space + dtbar),
     )
 
 for i in range(1, fhoopnum + 1):
     a.translate(
-        instanceList=("foundation-hoop1-" + str(i),),
+        instanceList=("foundation-hoop-1-" + str(i),),
         vector=(lfd / 2 - cover - (i - 1) * 50, -(tfd / 2 - cover), -cover),
     )
     a.translate(
-        instanceList=("foundation-hoop2-" + str(i),),
+        instanceList=("foundation-hoop-2-" + str(i),),
         vector=(lfd / 2 - cover - (i - 1) * 50, -(dtube / 2 + cover), -cover),
     )
     a.translate(
-        instanceList=("foundation-hoop3-" + str(i),),
+        instanceList=("foundation-hoop-3-" + str(i),),
         vector=(-(lfd / 2 - cover - (i - 1) * 50), -(tfd / 2 - cover), -cover),
     )
     a.translate(
-        instanceList=("foundation-hoop4-" + str(i),),
-        vector=(-(lfd / 2 - cover - (i - 1) * 50), -(dtube / 2 + cover), -cover),
+        instanceList=("foundation-hoop-4-" + str(i),),
+        vector=(-(lfd / 2 - cover - (i - 1) * 50), -
+                (dtube / 2 + cover), -cover),
     )
 
 for i in range(1, lhoopnum + 1):
     a.translate(
-        instanceList=("loadbeam-hoop1-" + str(i),),
+        instanceList=("loadbeam-hoop-1-" + str(i),),
         vector=(lbl / 2 - cover - (i - 1) * 50, 0, hwall + hbl / 2),
     )
     a.translate(
-        instanceList=("loadbeam-hoop2-" + str(i),),
+        instanceList=("loadbeam-hoop-2-" + str(i),),
         vector=(-(lbl / 2 - cover - (i - 1) * 50), 0, hwall + hbl / 2),
     )
 for i in range(1, midhoopnum + 1):
     a.translate(
-        instanceList=("loadbeam-hoop3-" + str(i),),
+        instanceList=("loadbeam-hoop-3-" + str(i),),
         vector=(((-1) ** i) * (int(i / 2)) * 50, 0, hwall + hbl / 2),
     )
     a.translate(
-        instanceList=("foudation-hoop5-" + str(i),),
+        instanceList=("foundation-hoop-5-" + str(i),),
         vector=(((-1) ** i) * (int(i / 2)) * 50, -(dtube / 2 + cover), -cover),
     )
     a.translate(
-        instanceList=("foundation-hoop6-" + str(i),),
+        instanceList=("foundation-hoop-6-" + str(i),),
         vector=(((-1) ** i) * (int(i / 2)) * 50, -(tfd / 2 - cover), -cover),
     )
 
@@ -735,7 +766,7 @@ a.translate(
     vector=(-lbl / 2 + cover, tbl / 2 - cover, hwall + cover),
 )
 
-## merge-rebar & embedd rebar
+# merge-rebar & embedd rebar
 ins = (a.instances["sheerwall-long-steel-1"],)
 for i in range(2, 15):
     ins = ins + (a.instances["sheerwall-long-steel-" + str(i)],)
@@ -744,8 +775,8 @@ for i in range(1, hoopnum + 1):
     ins = ins + (a.instances["sheerwall-hoop-12-" + str(i)],)
     ins = ins + (a.instances["sheerwall-hoop-13-" + str(i)],)
     ins = ins + (a.instances["sheerwall-hoop-14-" + str(i)],)
-    ins = ins + (a.instances["sheerwall-hoop21-" + str(i)],)
-    ins = ins + (a.instances["sheerwall-hoop22-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop-21-" + str(i)],)
+    ins = ins + (a.instances["sheerwall-hoop-22-" + str(i)],)
 a.InstanceFromBooleanMerge(
     name="merge-rebar", instances=ins, originalInstances=DELETE, domain=GEOMETRY
 )
@@ -765,10 +796,10 @@ ins = (a.instances["loadbeam-long-steel-1"],)
 for i in range(2, 5):
     ins = ins + (a.instances["loadbeam-long-steel-" + str(i)],)
 for i in range(1, lhoopnum + 1):
-    ins = ins + (a.instances["loadbeam-hoop1-" + str(i)],)
-    ins = ins + (a.instances["loadbeam-hoop2-" + str(i)],)
+    ins = ins + (a.instances["loadbeam-hoop-1-" + str(i)],)
+    ins = ins + (a.instances["loadbeam-hoop-2-" + str(i)],)
 for i in range(1, midhoopnum + 1):
-    ins = ins + (a.instances["loadbeam-hoop3-" + str(i)],)
+    ins = ins + (a.instances["loadbeam-hoop-3-" + str(i)],)
 a.InstanceFromBooleanMerge(
     name="merge-rebar-l", instances=ins, originalInstances=DELETE, domain=GEOMETRY
 )
@@ -788,13 +819,13 @@ ins = (a.instances["foundation-long-steel-1"],)
 for i in range(2, 9):
     ins = ins + (a.instances["foundation-long-steel-" + str(i)],)
 for i in range(1, fhoopnum + 1):
-    ins = ins + (a.instances["foundation-hoop1-" + str(i)],)
-    ins = ins + (a.instances["foundation-hoop2-" + str(i)],)
-    ins = ins + (a.instances["foundation-hoop3-" + str(i)],)
-    ins = ins + (a.instances["foundation-hoop4-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop-1-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop-2-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop-3-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop-4-" + str(i)],)
 for i in range(1, midhoopnum + 1):
-    ins = ins + (a.instances["foundation-hoop5-" + str(i)],)
-    ins = ins + (a.instances["foundation-hoop6-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop-5-" + str(i)],)
+    ins = ins + (a.instances["foundation-hoop-6-" + str(i)],)
 a.InstanceFromBooleanMerge(
     name="merge-rebar-f", instances=ins, originalInstances=DELETE, domain=GEOMETRY
 )
