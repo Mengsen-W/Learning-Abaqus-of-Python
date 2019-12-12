@@ -31,10 +31,10 @@ parameters = (
     ("Yield stress(longitudinal bar)(N/mm):", "400"),
     ("Yield stress(transversal bar)(N/mm):", "500"),
     ("Yield stress(tube)(N/mm):", "325"),
-    ("Displacement(maximum)(mm):", "35"),
-    ("axial-load(KN):", "3450000"),
-    ("offset(tube1)(mm):", "400"),
-    ("offset(tube2)(mm):", "230"),
+    ("Displacement(maximum)(mm):", "100"),
+    ("axial-load(KN):", "2862000"),
+    ("offset(tube1)(mm):", "472"),
+    ("offset(tube2)(mm):", "277"),
     ("Space between transversal bar", "100"),
     ("Mesh Size(mm):", "50"),
     ("Job Name:", "Job-ShearWall"),
@@ -258,7 +258,6 @@ myModel.materials["rebar-rigid"].Density(table=((7.85e-09,),))
 myModel.materials["rebar-rigid"].Elastic(table=((200000, 0.3),))
 myModel.materials["rebar-rigid"].Plastic(table=((400, 0.0),))
 
-# section
 myModel.HomogeneousSolidSection(
     name="in-con", material="in-concrete", thickness=None)
 myModel.HomogeneousSolidSection(
@@ -1417,6 +1416,26 @@ p = mdb.models[modelname].parts["foundation-Concrete"]
 p.seedPart(size=1000, deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 
+# rebar
+elemType1 = mesh.ElemType(elemCode=T3D2, elemLibrary=STANDARD)
+p = mdb.models[modelname].parts['merge-rebar']
+p.seedPart(size=10, deviationFactor=0.1, minSizeFactor=0.1)
+edges = p.edges
+pickedregions = (edges,)
+p.setElementType(regions=pickedregions, elemTypes=(elemType1,))
+p.generateMesh()
+
+p = mdb.models[modelname].parts['merge-rebar-l']
+p.seedPart(size=10, deviationFactor=0.1, minSizeFactor=0.1)
+p.setElementType(regions=((p.edges),), elemTypes=(elemType1,))
+p.generateMesh()
+
+p = mdb.models[modelname].parts['merge-rebar-f']
+p.setElementType(regions=((p.edges),), elemTypes=(elemType1,))
+p.seedPart(size=10, deviationFactor=0.1, minSizeFactor=0.1)
+p.generateMesh()
+
+
 # step
 mdb.models[modelname].StaticStep(
     name="Step-1",
@@ -1438,6 +1457,7 @@ mdb.models[modelname].StaticStep(
     minInc=1e-12,
     maxInc=0.3,
 )
+mdb.models[modelname].steps['Step-2'].setValues(timePeriod=41.0)
 
 # load&bc
 p = mdb.models[modelname].parts["loadbeam-Concrete"]
@@ -1684,6 +1704,9 @@ mdb.models[modelname].DisplacementBC(
     fieldName="",
     localCsys=None,
 )
+mdb.models[modelname].boundaryConditions['lateral-loading'].setValues(
+    amplitude='Amp-1')
+
 
 # bd
 a = mdb.models[modelname].rootAssembly
@@ -1770,9 +1793,3 @@ mdb.models[modelname].DisplacementBC(
     fieldName="",
     localCsys=None,
 )
-mdb.models[modelname].boundaryConditions['lateral-loading'].setValues(
-    amplitude='Amp-1')
-
-mdb.models['JinGuangZe_SheerWall'].steps['Step-2'].setValues(timePeriod=41.0)
-
-
